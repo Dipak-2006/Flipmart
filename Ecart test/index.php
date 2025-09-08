@@ -1,0 +1,353 @@
+<?php
+include 'config.php';
+
+// If user is already logged in, redirect to shopping page
+if (isset($_SESSION['user_id'])) {
+    header("Location: main.php");
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to FlipMart+ - Your Ultimate Shopping Destination</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ece9f7 0%, #b7caff 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .landing-container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d3a4b;
+        }
+        .brand span:first-child {
+            color: #3a6ee8;
+        }
+        .brand span:last-child {
+            color: #10b981;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .nav-btn {
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .nav-btn.primary {
+            background: linear-gradient(90deg, #5b8def 0%, #3a6ee8 100%);
+            color: white;
+        }
+        .nav-btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #2d3a4b;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .hero-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .hero-content {
+            max-width: 800px;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #2d3a4b;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #6b7280;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .cta-btn {
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        .cta-btn.primary {
+            background: linear-gradient(90deg, #5b8def 0%, #3a6ee8 100%);
+            color: white;
+        }
+        .cta-btn.secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2d3a4b;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(91, 141, 239, 0.3);
+        }
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+        .features-section {
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3a4b;
+            margin-bottom: 15px;
+        }
+        .feature-description {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        .footer {
+            padding: 40px 20px;
+            text-align: center;
+            color: #6b7280;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .nav-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="three-canvas"></canvas>
+    
+    <div class="landing-container">
+        <header class="header">
+            <div class="brand">
+                <span>Flip</span><span>Mart</span><span>+</span>
+            </div>
+            <div class="nav-buttons">
+                <a href="login.php" class="nav-btn secondary">Login</a>
+                <a href="register.php" class="nav-btn primary">Register</a>
+            </div>
+        </header>
+        
+        <main class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Welcome to FlipMart+</h1>
+                <p class="hero-subtitle">
+                    Discover millions of products at unbeatable prices. 
+                    Shop smart, live better with our curated collection of electronics, 
+                    fashion, home goods, and more.
+                </p>
+                <div class="cta-buttons">
+                    <a href="register.php" class="cta-btn primary">Start Shopping Now</a>
+                    <a href="login.php" class="cta-btn secondary">Sign In</a>
+                </div>
+            </div>
+        </main>
+        
+        <section class="features-section">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Fast Delivery</h3>
+                    <p class="feature-description">Get your orders delivered within 24-48 hours with our express shipping service.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Best Prices</h3>
+                    <p class="feature-description">Find the best deals and discounts on thousands of products every day.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3 class="feature-title">Secure Shopping</h3>
+                    <p class="feature-description">Shop with confidence with our secure payment system and buyer protection.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Wide Selection</h3>
+                    <p class="feature-description">Browse through millions of products across all categories and brands.</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="footer">
+            <p>&copy; 2025 FlipMart+. Made with ❤️ for amazing shopping experiences.</p>
+        </footer>
+    </div>
+
+    <script src="common.js"></script>
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
+
+        const canvas = document.getElementById("three-canvas");
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({canvas, alpha: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+
+        // Create floating stars and particles
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsVertices = [];
+        const starsColors = [];
+        const color = new THREE.Color();
+        
+        for (let i = 0; i < 1000; i++) {
+            starsVertices.push((Math.random() - 0.5) * 2000);
+            starsVertices.push((Math.random() - 0.5) * 2000);
+            starsVertices.push((Math.random() - 0.5) * 2000);
+            
+            const palette = [0xffffff, 0x9f7aea, 0x6366f1, 0xf472b6, 0x60a5fa, 0x34d399];
+            color.setHex(palette[Math.floor(Math.random() * palette.length)]);
+            starsColors.push(color.r, color.g, color.b);
+        }
+        
+        starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+        starsGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starsColors, 3));
+
+        const starsMaterial = new THREE.PointsMaterial({
+            size: 2,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+
+        // Create floating geometric shapes
+        const shapes = [];
+        const shapeColors = [0x9f7aea, 0x6366f1, 0xf472b6, 0x60a5fa, 0x34d399];
+        
+        for (let i = 0; i < 10; i++) {
+            const geometry = Math.random() > 0.5 ? 
+                new THREE.BoxGeometry(30, 30, 30) : 
+                new THREE.SphereGeometry(25, 12, 8);
+            
+            const material = new THREE.MeshBasicMaterial({
+                color: shapeColors[Math.floor(Math.random() * shapeColors.length)],
+                transparent: true,
+                opacity: 0.1,
+                wireframe: true
+            });
+            
+            const shape = new THREE.Mesh(geometry, material);
+            shape.position.set(
+                (Math.random() - 0.5) * 1000,
+                (Math.random() - 0.5) * 800,
+                (Math.random() - 0.5) * 600
+            );
+            
+            shapes.push(shape);
+            scene.add(shape);
+        }
+        
+        camera.position.z = 800;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate stars
+            stars.rotation.x += 0.0003;
+            stars.rotation.y += 0.0005;
+            
+            // Animate shapes
+            shapes.forEach((shape, index) => {
+                shape.rotation.x += 0.003 + index * 0.0005;
+                shape.rotation.y += 0.002 + index * 0.0005;
+                shape.position.y += Math.sin(Date.now() * 0.001 + index) * 0.3;
+            });
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Responsive resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
