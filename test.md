@@ -164,3 +164,4 @@ The platform is fully responsive and works on:
 ---
 
 **Made with ❤️ for amazing shopping experiences**
+
